@@ -10,6 +10,8 @@ public class FlockManager : MonoBehaviour
     public Vector3 swinLimits = new Vector3(5, 5, 5);
     public Vector3 goalPos;
 
+
+    //seta a velocida e movimentçao
     [Header("Configuraçao do cardume")]
     [Range(0.0f, 5.0f)]
     public float minSpeed;
@@ -25,6 +27,7 @@ public class FlockManager : MonoBehaviour
     {
         allFish = new GameObject[numFish];
 
+        //Cria lista de peixes
         for (int i = 0; i < numFish; i++)
         {
             Vector3 pos = this.transform.position + new Vector3(Random.Range(-swinLimits.x, swinLimits.x), 
@@ -39,6 +42,7 @@ public class FlockManager : MonoBehaviour
         
         void Update()
         {
+            //Checa a posicao e movimenta o peixe para uma nova
             goalPos = this.transform.position + new Vector3(Random.Range(-swinLimits.x, swinLimits.x),
                 Random.Range(-swinLimits.y, swinLimits.y),
                 Random.Range(-swinLimits.z, swinLimits.z));

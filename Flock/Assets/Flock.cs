@@ -4,38 +4,61 @@ using UnityEngine;
 
 public class Flock : MonoBehaviour
 {
+    //variavel
     public FlockManager myManager;
+    
+    //velocidade
     public float speed;
+   
+    //checa sw o peice esta virando
     bool turning = false;
 
 
     void Start()
     {
+        // Ajusta a velocidade
         speed = Random.Range(myManager.minSpeed, myManager.maxSpeed);
     }
 
-    // Update is called once per frame
+ 
     void Update()
     {
+        //cria limites para aonde os peixes podem nadar
         Bounds b = new Bounds(myManager.transform.position, myManager.swinLimits * 2);
+
+        RaycastHit hit = new RaycastHit();
+        
+        //define a direçao
+        Vector3 direction = myManager.transform.position - transform.position;
 
         if (!b.Contains(transform.position))
         {
+            
             turning =true;
+            direction = myManager.transform.position - transform.position;
+
+        }
+        else if(Physics.Raycast(transform.position, this.transform.forward*50, out hit))
+        {
+
+            turning = true;
+            direction = Vector3.Reflect(this.transform.forward, hit.normal);
         }
         else
             turning =false;
 
         if (turning)
         {
-            Vector3 direction = myManager.transform.position - transform.position;
             transform.rotation = Quaternion.Slerp(transform.rotation,
                 Quaternion.LookRotation(direction), myManager.rotationSpeed * Time.deltaTime);
         }
         else
         {
+            //
             if (Random.Range(0, 100) < 10)
                 speed = Random.Range(myManager.minSpeed, myManager.maxSpeed);
+            
+            //se for menor que 20
             if (Random.Range(0, 100) < 20)
                 ApplyRules();
         }
@@ -50,7 +73,10 @@ public class Flock : MonoBehaviour
 
     void ApplyRules()
     {
+        //lista de objetos
         GameObject[] gos;
+
+        //seta componentes
         gos = myManager.allFish;
 
         Vector3 vcentre = Vector3.zero;
@@ -83,8 +109,10 @@ public class Flock : MonoBehaviour
                             {
                                 vavoid = vavoid + (this.transform.position - go.transform.position);
                             }
-
+                            //pega o sxript flock
                             Flock anotherFlock = go.GetComponent<Flock>();
+
+                            //aumenta a vrlocidade
                             gSpeed = gSpeed + anotherFlock.speed;
                         }
                     }
@@ -94,8 +122,11 @@ public class Flock : MonoBehaviour
                     vcentre = vcentre / groupSize+(myManager.goalPos-this.transform.position);
                     speed = gSpeed / groupSize;
 
+                    //calcula direçao
                     Vector3 direction = (vcentre + vavoid) - transform.position;
                     if (direction != Vector3.zero)
+                        
+                        //rotaciona
                         transform.rotation = Quaternion.Slerp(transform.rotation,
                             Quaternion.LookRotation(direction),
                             myManager.rotationSpeed * Time.deltaTime);
